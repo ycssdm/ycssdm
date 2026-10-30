@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f5f7ef">
+  <meta name="color-scheme" content="light">
+  <title>豆匣 · 许诺宝宝的专属拼豆库存</title>
+  <style>
+    :root {
+      --paper: #f7f8f2;
+      --card: #fffefa;
+      --ink: #35473b;
+      --muted: #748176;
+      --green: #526f5b;
+      --green-dark: #3f5c47;
+      --sage: #dfe9d9;
+      --mint: #e8f1e5;
+      --line: #e3e9de;
+      --pink: #f5e6e4;
+      --pink-ink: #996965;
+      --shadow: 0 8px 26px rgba(65, 85, 63, .07);
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 15px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button, input, select { font: inherit; }
+    button, select { touch-action: manipulation; }
+    button { cursor: pointer; }
+    button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible, summary:focus-visible {
+      outline: 3px solid #91ac91;
+      outline-offset: 3px;
+    }
+    button:disabled { opacity: .4; cursor: default; }
+    .icon { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+    .app { max-width: 820px; margin: 0 auto; padding: 0 18px calc(112px + env(safe-area-inset-bottom)); }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: calc(17px + env(safe-area-inset-top)) 1px 17px; }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-mark { width: 38px; height: 38px; display: grid; place-items: center; background: var(--sage); border-radius: 13px; color: var(--green-dark); transform: rotate(-5deg); }
+    .brand-mark .icon { width: 25px; height: 25px; }
+    .brand-name { font-size: 20px; font-weight: 750; letter-spacing: 3px; }
+    .brand-sub { display: block; font-size: 9px; color: var(--muted); letter-spacing: 1.9px; margin-top: 1px; }
+    .icon-button { width: 44px; height: 44px; border: 1px solid var(--line); background: rgba(255, 254, 250, .75); color: var(--green); border-radius: 50%; display: inline-grid; place-items: center; }
+    .topbar-actions { display: flex; align-items: center; gap: 8px; }
+    .icon-button.undo-button { width: auto; min-width: 66px; padding: 0 11px; border-radius: 14px; display: inline-flex; gap: 5px; font-size: 12px; }
+    .undo-button .icon { width: 18px; height: 18px; }
+    .hero { position: relative; overflow: hidden; padding: 25px 22px 20px; background: linear-gradient(125deg, #e4eddd, #eef3e7 63%, #f3e9e2); border: 1px solid #e0e8d9; border-radius: 27px; box-shadow: var(--shadow); }
+    .hero::before, .hero::after { content: ""; position: absolute; border-radius: 50%; pointer-events: none; }
+    .hero::before { width: 150px; height: 150px; right: -56px; top: -65px; border: 23px solid rgba(255,255,255,.36); }
+    .hero::after { width: 75px; height: 75px; right: 42px; bottom: -49px; background: rgba(255,255,255,.35); }
+    .eyebrow { margin: 0 0 8px; font-size: 10px; font-weight: 650; letter-spacing: 1.7px; color: #74866f; }
+    h1 { margin: 0; font-size: 23px; line-height: 1.45; letter-spacing: .6px; font-weight: 700; }
+    .hero-note { color: #6e7f6e; font-size: 12px; margin: 6px 0 20px; }
+    .metrics { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 9px; position: relative; }
+    .metric { padding: 12px 8px 11px; border-radius: 16px; background: rgba(255, 254, 250, .76); text-align: center; }
+    .metric-value { display: block; font-size: 23px; line-height: 1.25; font-variant-numeric: tabular-nums; font-weight: 750; letter-spacing: -.5px; overflow-wrap: anywhere; }
+    .metric:first-child .metric-value { color: var(--green-dark); }
+    .metric-label { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; white-space: nowrap; }
+    .storage-warning { margin: 14px 0 0; padding: 12px 14px; border-radius: 14px; background: #fff0df; color: #875f35; font-size: 13px; line-height: 1.65; }
+    .workspace { margin-top: 23px; }
+    .search { display: flex; align-items: center; gap: 10px; height: 51px; padding: 0 14px; border: 1px solid var(--line); border-radius: 17px; background: var(--card); box-shadow: 0 3px 14px rgba(65, 85, 63, .025); }
+    .search .icon { color: #8b9989; width: 20px; }
+    .search input { width: 100%; min-width: 0; height: 46px; padding: 0; border: 0; outline: 0; color: var(--ink); background: transparent; font-size: 16px; }
+    .search input::placeholder { color: #9aa398; }
+    .search:focus-within { border-color: #9eb499; box-shadow: 0 0 0 3px rgba(139, 166, 134, .12); }
+    .search input:focus-visible { outline: none; }
+    .clear-search { width: 34px; height: 40px; border: 0; background: none; color: var(--muted); padding: 8px; }
+    .clear-search .icon { width: 17px; }
+    .controls { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 13px 1px 16px; }
+    .step-label { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; white-space: nowrap; }
+    .select-wrap { position: relative; display: inline-flex; align-items: center; }
+    select { appearance: none; -webkit-appearance: none; border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 11px; padding: 9px 27px 9px 11px; min-height: 40px; }
+    .select-wrap::after { content: "⌄"; position: absolute; right: 10px; top: 8px; color: var(--muted); pointer-events: none; }
+    .sort-select { font-size: 12px; color: var(--muted); border-color: transparent; background: transparent; }
+    .status-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 4px; background: #ecefe6; border-radius: 14px; }
+    .status-tab { min-height: 40px; border: 0; background: transparent; color: #778172; border-radius: 11px; font-size: 13px; }
+    .status-tab.active { background: var(--card); color: var(--green-dark); box-shadow: 0 2px 7px rgba(60,80,55,.07); font-weight: 650; }
+    .series-scroll { display: flex; gap: 8px; overflow-x: auto; padding: 15px 0 9px; scrollbar-width: none; }
+    .series-scroll::-webkit-scrollbar { display: none; }
+    .series-chip { flex: none; min-width: 44px; min-height: 36px; padding: 7px 13px; border: 1px solid var(--line); border-radius: 20px; background: transparent; color: var(--muted); font-size: 12px; }
+    .series-chip.active { background: var(--green); border-color: var(--green); color: white; }
+    .list-heading { display: flex; justify-content: space-between; align-items: baseline; margin: 12px 1px 13px; }
+    .list-heading h2 { margin: 0; font-size: 16px; letter-spacing: .4px; }
+    .result-count { color: var(--muted); font-size: 11px; }
+    .color-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+    .color-card { min-width: 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: 18px; background: var(--card); box-shadow: 0 3px 12px rgba(65,85,63,.025); }
+    .color-card.expanded { border-color: #c8d7c1; }
+    .color-main { width: 100%; min-height: 50px; display: grid; grid-template-columns: 47px minmax(0, 1fr) auto 18px; align-items: center; gap: 10px; padding: 0; border: 0; background: transparent; color: inherit; text-align: left; border-radius: 12px; }
+    .color-summary { display: block; min-width: 0; }
+    .color-main .stock-tag { justify-self: end; }
+    .fold-icon { width: 17px; height: 17px; color: #87947f; }
+    .color-card.expanded .fold-icon { transform: rotate(180deg); }
+    .bead { position: relative; display: block; width: 47px; height: 47px; border-radius: 50%; background: radial-gradient(circle at 31% 23%, rgba(255,255,255,.5), transparent 48%), var(--bead); box-shadow: inset 0 -3px 5px rgba(40,45,35,.13), 0 3px 6px rgba(50,65,45,.09); }
+    .bead::after { content: ""; position: absolute; width: 15px; height: 15px; left: 16px; top: 16px; border-radius: 50%; background: var(--card); box-shadow: inset 1px 2px 4px rgba(45,50,40,.24), 0 1px 1px rgba(255,255,255,.45); }
+    .bead.transparent { background: repeating-linear-gradient(135deg, rgba(220,220,225,.28) 0 4px, rgba(255,255,255,.55) 4px 8px); border: 1px solid #dddde1; }
+    .bead.mixed { background: conic-gradient(from 25deg, #efc4c5, #f1e2a8, #b9d6b0, #b6d7e3, #d3c1df, #efc4c5); }
+    .stock-tag { flex: none; padding: 4px 7px; border-radius: 7px; font-size: 10px; color: #6c8065; background: var(--mint); }
+    .stock-tag.low { color: var(--pink-ink); background: var(--pink); }
+    .stock-tag.out { color: #8b8177; background: #f0ede7; }
+    .color-code { margin-top: 11px; font-size: 17px; font-weight: 750; letter-spacing: .4px; }
+    .color-summary .color-code { display: block; margin-top: 0; }
+    .transparent-note { font-size: 10px; font-weight: 400; color: var(--muted); margin-left: 5px; }
+    .quantity { display: flex; align-items: baseline; gap: 5px; margin-top: 2px; }
+    .quantity-number { max-width: 100%; font-size: 26px; font-weight: 650; line-height: 1.35; letter-spacing: -.5px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .color-summary .quantity-number { font-size: 21px; }
+    .quantity-unit { color: var(--muted); font-size: 11px; }
+    .card-actions { display: grid; grid-template-columns: 44px 1fr 44px; gap: 7px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+    .count-button { min-height: 42px; border-radius: 12px; border: 0; display: grid; place-items: center; }
+    .count-button.minus { background: #eff2e9; color: var(--green); }
+    .count-button.plus { background: var(--green); color: white; }
+    .count-button .icon { width: 18px; height: 18px; }
+    .edit-button { border: 0; border-radius: 10px; background: transparent; color: #8b9786; font-size: 11px; min-height: 40px; }
+    .edit-button:active { background: var(--mint); }
+    .empty { padding: 43px 20px; text-align: center; background: rgba(255,254,250,.65); border: 1px dashed #d7dfcf; border-radius: 23px; }
+    .empty-illustration { width: 52px; height: 52px; display: grid; place-items: center; margin: 0 auto 13px; border-radius: 18px; background: var(--mint); color: var(--green); }
+    .empty h3 { margin: 0 0 7px; font-size: 16px; }
+    .empty p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+    .empty button { border: 0; background: none; color: var(--green); text-decoration: underline; padding: 12px; }
+    .restock-note { margin: 0 0 17px; color: var(--muted); font-size: 13px; line-height: 1.7; }
+    .restock-list { display: grid; gap: 10px; }
+    .restock-card { display: flex; align-items: center; gap: 12px; padding: 12px 13px; background: var(--card); border: 1px solid var(--line); border-radius: 18px; }
+    .restock-card .bead { width: 41px; height: 41px; flex: none; }
+    .restock-card .bead::after { width: 13px; height: 13px; left: 14px; top: 14px; }
+    .restock-info { flex: 1; min-width: 0; }
+    .restock-code { border: 0; padding: 0; background: transparent; color: var(--ink); font-weight: 700; font-size: 16px; text-align: left; min-height: 30px; }
+    .restock-detail { color: var(--muted); font-size: 11px; margin-top: 2px; }
+    .restock-add { min-height: 42px; border: 0; border-radius: 12px; background: var(--mint); color: var(--green-dark); padding: 8px 12px; font-size: 12px; white-space: nowrap; }
+    .footer { padding: 29px 8px 0; text-align: center; color: #8b9686; font-size: 11px; line-height: 1.9; }
+    .save-state { display: inline-flex; gap: 5px; align-items: center; color: #7c9076; }
+    .save-state .icon { width: 14px; height: 14px; }
+    .footer p { margin: 5px 0; }
+    .footer a { color: #71856b; text-underline-offset: 2px; }
+    .bottom-nav { position: fixed; z-index: 20; bottom: 0; left: 0; right: 0; padding: 9px 18px calc(9px + env(safe-area-inset-bottom)); background: rgba(255, 254, 250, .95); border-top: 1px solid var(--line); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+    .nav-inner { max-width: 480px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .nav-button { min-height: 55px; padding: 5px; border: 0; border-radius: 15px; background: transparent; color: #879182; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 3px; font-size: 11px; }
+    .nav-button.active { background: var(--mint); color: var(--green-dark); font-weight: 650; }
+    .nav-button .icon { width: 22px; height: 22px; }
+    dialog { width: min(100% - 28px, 480px); max-height: min(88dvh, 760px); margin: auto; padding: 0; border: 1px solid var(--line); border-radius: 26px; background: var(--card); color: var(--ink); box-shadow: 0 20px 80px rgba(45,65,45,.2); overflow: auto; }
+    dialog::backdrop { background: rgba(44, 58, 44, .32); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+    .dialog-content { padding: 23px 22px calc(24px + env(safe-area-inset-bottom)); }
+    .dialog-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .dialog-header h2 { margin: 0; font-size: 20px; }
+    .dialog-header .icon-button { width: 40px; height: 40px; background: var(--paper); }
+    .detail-color { display: flex; align-items: center; gap: 17px; padding: 17px; background: var(--mint); border-radius: 19px; margin-bottom: 22px; }
+    .detail-color .bead { width: 60px; height: 60px; }
+    .detail-color .bead::after { width: 20px; height: 20px; left: 20px; top: 20px; background: var(--mint); }
+    .detail-code { font-size: 25px; font-weight: 750; }
+    .detail-status { color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .field { display: block; margin-bottom: 18px; }
+    .field-title { display: block; font-size: 13px; font-weight: 650; margin-bottom: 8px; }
+    .input-suffix { display: flex; align-items: center; border: 1px solid #dce4d5; border-radius: 14px; background: white; overflow: hidden; }
+    .input-suffix:focus-within { border-color: #8fa886; box-shadow: 0 0 0 3px rgba(139,166,134,.12); }
+    .input-suffix input { width: 100%; min-width: 0; height: 50px; padding: 0 14px; border: 0; outline: 0; color: var(--ink); background: transparent; font-size: 19px; font-variant-numeric: tabular-nums; }
+    .input-suffix input:focus-visible { outline: none; }
+    .input-suffix span { padding-right: 15px; color: var(--muted); font-size: 12px; }
+    .field-hint { display: block; color: var(--muted); font-size: 11px; line-height: 1.6; margin-top: 6px; }
+    .primary-button { width: 100%; min-height: 49px; border: 0; border-radius: 15px; padding: 12px 16px; background: var(--green); color: white; font-weight: 650; }
+    .secondary-button { min-height: 46px; border: 1px solid var(--line); border-radius: 14px; padding: 11px 13px; background: var(--card); color: var(--green-dark); display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; }
+    .detail-adjust-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: -6px 0 20px; }
+    .detail-adjust-actions .secondary-button { border-color: transparent; background: var(--mint); }
+    .batch-tabs { grid-template-columns: repeat(2, 1fr); margin-bottom: 16px; }
+    .batch-select-wrap, .batch-series-select { width: 100%; }
+    .batch-codes { width: 100%; min-height: 88px; padding: 12px 14px; border: 1px solid #dce4d5; border-radius: 14px; background: white; color: var(--ink); resize: vertical; font: inherit; font-size: 16px; line-height: 1.6; }
+    .batch-codes:focus { border-color: #8fa886; box-shadow: 0 0 0 3px rgba(139,166,134,.12); outline: none; }
+    .settings-section { padding: 18px 0; border-top: 1px solid var(--line); }
+    .settings-section:first-of-type { padding-top: 0; border-top: 0; }
+    .settings-section h3 { margin: 0 0 7px; font-size: 15px; }
+    .settings-section > p { margin: 0 0 13px; color: var(--muted); font-size: 12px; line-height: 1.7; }
+    .backup-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .backup-buttons .secondary-button:first-child { grid-column: 1 / -1; }
+    details { border-top: 1px solid var(--line); padding: 15px 0; }
+    summary { cursor: pointer; font-weight: 650; font-size: 14px; padding: 3px 0; }
+    .help-content { color: var(--muted); font-size: 13px; line-height: 1.85; }
+    .help-content ol { padding-left: 21px; margin: 11px 0; }
+    .help-content p { margin: 9px 0; }
+    .help-content strong { color: var(--ink); }
+    .source-note { font-size: 11px; line-height: 1.8; color: var(--muted); }
+    .source-note a { color: var(--green); }
+    .cloud-strip { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 13px; }
+    .room-button { min-height: 44px; display: inline-flex; align-items: center; gap: 7px; padding: 9px 13px; border: 1px solid #dce5d5; border-radius: 14px; background: var(--mint); color: var(--green-dark); font-size: 12px; font-weight: 650; }
+    .sync-pill { flex: none; display: inline-flex; align-items: center; gap: 5px; color: var(--muted); font-size: 11px; }
+    .sync-pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #9db398; }
+    .sync-pill.saving::before { background: #d1a45c; }
+    .sync-pill.error::before { background: #bd7b72; }
+    .room-form { padding-top: 17px; margin-top: 17px; border-top: 1px solid var(--line); }
+    .room-form h3 { margin: 0 0 5px; font-size: 15px; }
+    .room-form p, .room-note { color: var(--muted); font-size: 12px; line-height: 1.7; }
+    .room-note { padding: 11px 13px; border-radius: 12px; background: var(--mint); }
+    .room-actions { display: grid; gap: 10px; margin-top: 15px; }
+    .readonly-input { width: 100%; min-height: 46px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); color: var(--muted); }
+    .ocr-progress { min-height: 24px; color: var(--muted); font-size: 12px; line-height: 1.7; }
+    .ocr-warning { padding: 11px 13px; border-radius: 12px; background: #fff2df; color: #875f35; font-size: 12px; line-height: 1.7; }
+    .ocr-rows { display: grid; gap: 9px; margin: 15px 0; }
+    .ocr-row { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.2fr) 40px; gap: 8px; align-items: center; }
+    .ocr-row input { width: 100%; min-width: 0; min-height: 43px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 11px; background: white; color: var(--ink); }
+    .ocr-row input.invalid { border-color: #c88980; background: #fff4f1; }
+    .ocr-delete { width: 40px; height: 43px; border: 0; border-radius: 11px; background: #f0f2eb; color: var(--muted); }
+    .ocr-before { display: block; color: var(--muted); font-size: 10px; margin-top: 3px; }
+    .ocr-unrecognized { max-height: 120px; overflow: auto; white-space: pre-wrap; color: var(--muted); font-size: 11px; }
+    .toast { position: fixed; z-index: 50; bottom: calc(91px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: max-content; max-width: calc(100% - 40px); padding: 11px 17px; border-radius: 14px; background: #405645; color: white; box-shadow: 0 7px 24px rgba(40,60,40,.17); font-size: 13px; text-align: center; line-height: 1.5; }
+    @media (min-width: 560px) {
+      .app { padding-left: 26px; padding-right: 26px; }
+      .color-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+      .hero { padding: 30px; }
+      h1 { font-size: 27px; }
+      .metric-value { font-size: 27px; }
+    }
+    @media (min-width: 760px) { .color-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    @media (max-width: 350px) {
+      .app { padding-left: 12px; padding-right: 12px; }
+      .hero { padding: 20px 15px 16px; }
+      .metric-value { font-size: 20px; }
+      .color-grid { gap: 8px; }
+      .color-card { padding-left: 10px; padding-right: 10px; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+    <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M19.8 3.8C12 3.4 5.1 5.6 4 12.1c-.7 4.3 3.6 7.2 7 5.1 5.1-3 5.7-8.5 8.8-13.4Z"/><path d="M3 21c3.1-5.4 6.9-8.7 12-11"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></symbol>
+    <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M4 16v5h16v-5"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4m-4 4 4-4 4 4M4 16v5h16v-5"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="m9 14-5-5 5-5M4 9h9a7 7 0 0 1 7 7v3"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24"><path d="m3 7 9-4 9 4-9 4-9-4Zm0 0v10l9 4 9-4V7M12 11v10"/></symbol>
+  </svg>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark"><svg class="icon"><use href="#i-leaf"/></svg></span>
+        <div><span class="brand-name">豆匣</span><span class="brand-sub">MY LITTLE BEAD BOX</span></div>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-button undo-button" id="undo-button" type="button" aria-label="撤销上一步库存修改" title="撤销上一步" disabled><svg class="icon"><use href="#i-undo"/></svg>撤销</button>
+        <button class="icon-button" type="button" data-open-settings aria-label="设置、备份与使用帮助"><svg class="icon"><use href="#i-settings"/></svg></button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <p class="eyebrow">COLLECT LITTLE HAPPINESS</p>
+        <h1 id="page-title">天天开心，拼出小美好。</h1>
+        <p class="hero-note">MARD 221 色 · 许诺宝宝的专属拼豆库存</p>
+        <div class="metrics">
+          <div class="metric"><strong class="metric-value" id="total-count">0</strong><span class="metric-label">总余量（颗）</span></div>
+          <div class="metric"><strong class="metric-value" id="stock-count">0</strong><span class="metric-label">有库存颜色</span></div>
+          <div class="metric"><strong class="metric-value" id="low-count">0</strong><span class="metric-label">待补颜色</span></div>
+        </div>
+      </section>
+      <div class="cloud-strip">
+        <button class="room-button" id="room-button" type="button"><svg class="icon"><use href="#i-upload"/></svg><span id="room-button-label">双人实时共享</span></button>
+        <span class="sync-pill" id="sync-pill">本地预览</span>
+      </div>
+      <p class="storage-warning" id="storage-warning" role="alert" hidden>当前浏览器不能保存数据，本次记录可能在关闭后丢失。请换用支持本地存储的浏览器，或立即导出备份。</p>
+
+      <section class="workspace" id="inventory-view" aria-label="拼豆库存">
+        <label class="search">
+          <svg class="icon"><use href="#i-search"/></svg>
+          <input id="search-input" type="search" placeholder="搜索色号或混豆，比如 A1" autocomplete="off" enterkeyhint="search" aria-label="搜索色号或混豆">
+          <button class="clear-search" id="clear-search" type="button" aria-label="清空搜索" hidden><svg class="icon"><use href="#i-close"/></svg></button>
+        </label>
+        <div class="controls">
+          <label class="step-label" for="step-select">每次增减
+            <span class="select-wrap"><select id="step-select"><option value="50">50 颗</option><option value="100">100 颗</option><option value="1000">1000 颗</option></select></span>
+          </label>
+          <span class="select-wrap"><select class="sort-select" id="sort-select" aria-label="库存排序"><option value="code">按色号</option><option value="asc">余量从少到多</option><option value="desc">余量从多到少</option></select></span>
+        </div>
+        <div class="status-tabs" role="group" aria-label="按库存状态筛选">
+          <button class="status-tab active" type="button" data-status="all" aria-pressed="true">全部</button>
+          <button class="status-tab" type="button" data-status="stock" aria-pressed="false">有库存</button>
+          <button class="status-tab" type="button" data-status="low" aria-pressed="false">待补</button>
+          <button class="status-tab" type="button" data-status="out" aria-pressed="false">缺货</button>
+        </div>
+        <div class="series-scroll" id="series-filters" role="group" aria-label="按色号系列筛选"></div>
+        <div class="list-heading"><h2>我的色号</h2><span class="result-count" id="result-count" aria-live="polite"></span></div>
+        <div class="color-grid" id="color-grid"></div>
+        <div class="empty" id="inventory-empty" hidden>
+          <span class="empty-illustration"><svg class="icon"><use href="#i-search"/></svg></span>
+          <h3>没有找到这些豆子</h3>
+          <p id="empty-message">换个色号或筛选条件试试看。</p>
+          <button type="button" id="reset-filters">查看全部库存</button>
+        </div>
+      </section>
+
+      <section class="workspace" id="restock-view" aria-label="补豆清单" hidden>
+        <div class="list-heading"><h2>补豆小清单</h2><span class="result-count" id="restock-count"></span></div>
+        <p class="restock-note">余量为 0，或不超过补货线的颜色会出现在这里。点色号可以修改余量与补货线。</p>
+        <label class="search">
+          <svg class="icon"><use href="#i-search"/></svg>
+          <input id="restock-search" type="search" placeholder="在补豆清单里搜索" autocomplete="off" enterkeyhint="search" aria-label="搜索补豆清单">
+        </label>
+        <div class="series-scroll" id="restock-series" role="group" aria-label="按系列筛选补豆清单"></div>
+        <div class="restock-list" id="restock-list"></div>
+        <div class="empty" id="restock-empty" hidden>
+          <span class="empty-illustration"><svg class="icon"><use href="#i-check"/></svg></span>
+          <h3 id="restock-empty-title">库存都妥妥的</h3>
+          <p id="restock-empty-message">暂时没有需要补的颜色，安心创作吧。</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span class="save-state" id="save-state"><svg class="icon"><use href="#i-check"/></svg>已自动保存在本机</span>
+      <p>愿许诺宝宝天天开心，每一颗小豆子都带来小小的快乐。</p>
+      <p>双人实时同步 · 图片本地识别 · 建议定期备份</p>
+      <p>色值仅供屏幕对色参考，非 MARD 官方 RGB<br><a href="https://beadsheet.com/zh/mard-color-chart/" target="_blank" rel="noopener noreferrer">参考色值来源（CC BY 4.0）</a></p>
+    </footer>
+  </div>
+
+  <nav class="bottom-nav" aria-label="主要功能">
+    <div class="nav-inner">
+      <button class="nav-button active" type="button" data-view="inventory" aria-current="page"><svg class="icon"><use href="#i-grid"/></svg>我的库存</button>
+      <button class="nav-button" type="button" data-view="restock"><svg class="icon"><use href="#i-bag"/></svg>补豆清单</button>
+      <button class="nav-button" type="button" data-open-settings><svg class="icon"><use href="#i-settings"/></svg>设置与备份</button>
+    </div>
+  </nav>
+
+  <dialog id="detail-dialog" aria-labelledby="detail-title">
+    <div class="dialog-content">
+      <div class="dialog-header"><h2 id="detail-title">颜色详情</h2><button class="icon-button" type="button" data-close-dialog aria-label="关闭颜色详情"><svg class="icon"><use href="#i-close"/></svg></button></div>
+      <div class="detail-color"><span class="bead" id="detail-bead"></span><div><div class="detail-code" id="detail-code"></div><div class="detail-status" id="detail-status"></div></div></div>
+      <form id="detail-form" novalidate>
+        <label class="field"><span class="field-title">现在还剩多少？</span><span class="input-suffix"><input id="quantity-input" type="number" inputmode="numeric" min="0" max="999999999" step="1" required aria-describedby="quantity-hint"><span>颗</span></span><span class="field-hint" id="quantity-hint">请输入 0 或正整数，最多 999,999,999 颗。</span></label>
+        <label class="field"><span class="field-title">这一色本次增减</span><span class="input-suffix"><input id="detail-step-input" type="number" inputmode="numeric" min="1" max="999999999" step="1" value="1" required aria-describedby="detail-step-hint"><span>颗</span></span><span class="field-hint" id="detail-step-hint">输入这一色要加或减的数量，调整后再点“保存这一色”。</span></label>
+        <div class="detail-adjust-actions">
+          <button class="secondary-button" id="detail-decrease" type="button"><svg class="icon"><use href="#i-minus"/></svg>按此数减少</button>
+          <button class="secondary-button" id="detail-increase" type="button"><svg class="icon"><use href="#i-plus"/></svg>按此数增加</button>
+        </div>
+        <label class="field"><span class="field-title">我的补货线</span><span class="input-suffix"><input id="threshold-input" type="number" inputmode="numeric" min="0" max="999999999" step="1" required aria-describedby="threshold-hint"><span>颗</span></span><span class="field-hint" id="threshold-hint">余量不超过这个数时，就提醒我补豆；默认为 100 颗。</span></label>
+        <button class="primary-button" type="submit">保存这一色</button>
+      </form>
+    </div>
+  </dialog>
+
+  <dialog id="settings-dialog" aria-labelledby="settings-title">
+    <div class="dialog-content">
+      <div class="dialog-header"><h2 id="settings-title">照护我的豆匣</h2><button class="icon-button" type="button" data-close-dialog aria-label="关闭设置"><svg class="icon"><use href="#i-close"/></svg></button></div>
+      <section class="settings-section">
+        <h3>双人实时共享</h3>
+        <p id="settings-sync-description">创建或加入共享房间后，两个人可以在不同地点查看并编辑同一份库存。</p>
+        <button class="secondary-button" type="button" id="settings-room-button"><svg class="icon"><use href="#i-upload"/></svg>创建或加入共享房间</button>
+      </section>
+      <section class="settings-section">
+        <h3>清单图片识别</h3>
+        <p>上传清晰的清单或表格截图，在手机端识别色号与数量。图片不上传，确认结果后才写入库存。</p>
+        <button class="secondary-button" type="button" id="open-ocr"><svg class="icon"><use href="#i-upload"/></svg>上传清单图片</button>
+      </section>
+      <section class="settings-section">
+        <h3>备份与导出</h3>
+        <p>共享房间的库存保存在云端；本机预览只保存在当前浏览器。无论哪种方式，都建议定期导出备份。</p>
+        <div class="backup-buttons">
+          <button class="secondary-button" type="button" id="export-json"><svg class="icon"><use href="#i-download"/></svg>备份库存（恢复用）</button>
+          <button class="secondary-button" type="button" id="import-json"><svg class="icon"><use href="#i-upload"/></svg>恢复备份</button>
+          <button class="secondary-button" type="button" id="export-csv"><svg class="icon"><use href="#i-download"/></svg>导出表格</button>
+        </div>
+        <input id="import-file" type="file" accept=".json,application/json" hidden>
+      </section>
+      <section class="settings-section">
+        <h3>批量设置最低库存</h3>
+        <p>最低库存就是补货线。可统一设置一个色系或多个色号，不会改变这些颜色的现有余量。</p>
+        <form id="batch-threshold-form" novalidate>
+          <div class="status-tabs batch-tabs" role="group" aria-label="批量设置范围">
+            <button class="status-tab active" type="button" data-batch-mode="series" aria-pressed="true">整个色系</button>
+            <button class="status-tab" type="button" data-batch-mode="codes" aria-pressed="false">多个色号</button>
+          </div>
+          <label class="field" id="batch-series-field"><span class="field-title">选择色系</span><span class="select-wrap batch-select-wrap"><select class="batch-series-select" id="batch-series"><option value="A">A 系列（26 色）</option><option value="B">B 系列（32 色）</option><option value="C">C 系列（29 色）</option><option value="D">D 系列（26 色）</option><option value="E">E 系列（24 色）</option><option value="F">F 系列（25 色）</option><option value="G">G 系列（21 色）</option><option value="H">H 系列（23 色）</option><option value="M">M 系列（15 色）</option></select></span></label>
+          <label class="field" id="batch-codes-field" hidden><span class="field-title">输入多个色号</span><textarea class="batch-codes" id="batch-codes" placeholder="例如：A1、A2、B3" autocapitalize="characters" spellcheck="false" aria-describedby="batch-codes-hint"></textarea><span class="field-hint" id="batch-codes-hint">用逗号、空格或换行分隔，重复色号只设置一次。</span></label>
+          <label class="field"><span class="field-title">统一最低库存</span><span class="input-suffix"><input id="batch-threshold-input" type="number" inputmode="numeric" min="0" max="999999999" step="1" value="100" required><span>颗</span></span></label>
+          <button class="primary-button" type="submit">一键设置最低库存</button>
+        </form>
+      </section>
+      <details open>
+        <summary>怎样双人共享？</summary>
+        <div class="help-content">
+          <ol>
+            <li>创建者点击“双人实时共享”，创建房间并设置密码；创建后可导入旧版备份。</li>
+            <li>复制邀请链接发给另一位，房间密码单独发送。对方打开链接并输入密码即可加入。</li>
+            <li>两个人的修改会实时同步；断网时暂停写入，恢复网络后重新连接。每个房间最多两人。</li>
+            <li>未完成 Supabase 配置时只是本机预览，不会远程共享。原离线 HTML 版本仍可单独使用。</li>
+          </ol>
+        </div>
+      </details>
+      <details>
+        <summary>记数与补货提醒</summary>
+        <div class="help-content">
+          <p>每个色号默认折叠，点击所在行展开操作按钮。快捷挡位为 50、100、1000 颗；余量不够扣时会停在 0，不会变成负数。</p>
+          <p>点击展开后的“改数”可输入准确余量，也可填写这一色的本次增减数量，再按此数加或减，调整后保存生效。</p>
+          <p>右上角“撤销”可连续撤回最近 20 步库存修改，包括增减、改数、批量最低库存和恢复备份。撤销历史在刷新或关闭页面后清空，库存本身仍会自动保存。</p>
+          <p>每种颜色的最低库存（补货线）初始为 100 颗，可单独修改，也可在设置中按色系或多个色号批量修改。</p>
+          <p>“待补”包含缺货颜色；补豆清单会汇总所有余量不超过补货线的颜色。</p>
+        </div>
+      </details>
+      <details>
+        <summary>色卡与隐私说明</summary>
+        <div class="help-content source-note">
+          <p>内置 MARD 221 色：A–H、M 系列。H1 为透明豆。屏幕色值来自社区整理，并非品牌官方 RGB；不同屏幕和实物可能存在色差，请以实物色卡为准。</p>
+          <p>“混豆”是独立的混合装库存项，用于记录暂时不想拆分的豆子；计入总余量、库存状态和补豆清单，但不计入 MARD 221 色色卡。</p>
+          <p>参考数据：makebead/craft-color-codes（CC BY 4.0），经 <a href="https://beadsheet.com/zh/mard-color-chart/" target="_blank" rel="noopener noreferrer">BeadSheet 色卡</a>核对。来源链接仅在你主动点击时联网。</p>
+          <p>共享房间的色号、余量和最低库存保存在 Supabase，不需要邮箱账号；清单图片只在当前设备上识别，不会上传。未完成云配置时，数据只保存在本机。</p>
+        </div>
+      </details>
+    </div>
+  </dialog>
+
+  <dialog id="room-dialog" aria-labelledby="room-title">
+    <div class="dialog-content">
+      <div class="dialog-header"><h2 id="room-title">双人实时共享</h2><button class="icon-button" type="button" data-close-dialog aria-label="关闭共享设置"><svg class="icon"><use href="#i-close"/></svg></button></div>
+      <div id="room-start">
+        <p class="room-note" id="room-config-note">一个人创建房间，另一个人打开邀请链接并输入相同密码即可加入。无需分别注册账号。</p>
+        <form class="room-form" id="create-room-form" novalidate>
+          <h3>创建新房间</h3>
+          <p>创建后可导入旧版备份。每个房间最多两个人。</p>
+          <label class="field"><span class="field-title">设置房间密码</span><input class="readonly-input" id="create-password" type="password" minlength="6" maxlength="72" autocomplete="new-password" required></label>
+          <button class="primary-button" type="submit">创建共享房间</button>
+        </form>
+        <form class="room-form" id="join-room-form" novalidate>
+          <h3>加入已有房间</h3>
+          <p>房间号通常已包含在邀请链接中。</p>
+          <label class="field"><span class="field-title">房间号</span><input class="readonly-input" id="join-room-id" type="text" autocapitalize="off" spellcheck="false" required></label>
+          <label class="field"><span class="field-title">房间密码</span><input class="readonly-input" id="join-password" type="password" minlength="6" maxlength="72" autocomplete="current-password" required></label>
+          <button class="primary-button" type="submit">加入并查看实时库存</button>
+        </form>
+      </div>
+      <div id="room-active" hidden>
+        <p class="room-note">房间已连接。把邀请链接发给另一位，房间密码请通过安全的方式单独发送。</p>
+        <label class="field"><span class="field-title">当前房间号</span><input class="readonly-input" id="active-room-id" type="text" readonly></label>
+        <div class="room-actions">
+          <button class="primary-button" id="copy-invite" type="button">复制邀请链接</button>
+          <button class="secondary-button" id="leave-room" type="button">退出当前房间</button>
+        </div>
+        <p class="room-form">密码不以明文保存，也无法从页面找回。退出只移除当前设备的成员身份，不会清空房间库存。</p>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="ocr-dialog" aria-labelledby="ocr-title">
+    <div class="dialog-content">
+      <div class="dialog-header"><h2 id="ocr-title">识别清单图片</h2><button class="icon-button" type="button" data-close-dialog aria-label="关闭图片识别"><svg class="icon"><use href="#i-close"/></svg></button></div>
+      <div id="ocr-upload-view">
+        <p class="room-note">适合清晰的清单或表格截图。图片只在当前设备上识别，不会上传；识别结果必须确认后才会调整库存。</p>
+        <div class="room-actions"><button class="primary-button" id="ocr-select" type="button">选择清单图片</button></div>
+        <input id="ocr-file" type="file" accept="image/*" hidden>
+        <p class="ocr-progress" id="ocr-progress">首次识别需要下载中英文语言包，请保持网络连接。</p>
+      </div>
+      <div id="ocr-results" hidden>
+        <p class="ocr-warning" id="ocr-warning" hidden></p>
+        <div class="ocr-rows" id="ocr-rows"></div>
+        <button class="secondary-button" id="ocr-add-row" type="button">手动添加一行</button>
+        <details><summary>未识别的内容</summary><pre class="ocr-unrecognized" id="ocr-unrecognized"></pre></details>
+        <label class="field"><span class="field-title">怎样调整库存？</span><span class="select-wrap batch-select-wrap"><select class="batch-series-select" id="ocr-mode"><option value="set">盘点：作为最新余量</option><option value="add">补入：增加到现有余量</option><option value="subtract">使用：从现有余量扣减</option></select></span></label>
+        <p class="room-note" id="ocr-summary"></p>
+        <button class="primary-button" id="ocr-apply" type="button">确认并写入库存</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+  <script src="cloud-config.js"></script>
+  <script>
+    (() => {
+      'use strict';
+      const SERIES = {
+        A: 'FAF4C8 FFFFD5 FEFF8B FBED56 F4D738 FEAC4C FE8B4C FFDA45 FF995B F77C31 FFDD99 FE9F72 FFC365 FD543D FFF365 FFFF9F FFE36E FEBE7D FD7C72 FFD568 FFE395 F4F57D E6C9B7 F7F8A2 FFD67D FFC830',
+        B: 'E6EE31 63F347 9EF780 5DE035 35E352 65E2A6 3DAF80 1C9C4F 27523A 95D3C2 5D722A 166F41 CAEB7B ADE946 2E5132 C5ED9C 9BB13A E6EE49 24B88C C2F0CC 156A6B 0B3C43 303A21 EEFCA5 4E846D 8D7A35 CCE1AF 9EE5B9 C5E254 E2FCB1 B0E792 9CAB5A',
+        C: 'E8FFE7 A9F9FC A0E2FB 41CCFF 01ACEB 50AAF0 3677D2 0F54C0 324BCA 3EBCE2 28DDDE 1C334D CDE8FF D5FDFF 22C4C6 1557A8 04D1F6 1D3344 1887A2 176DAF BEDDFF 67B4BE C8E2FF 7CC4FF A9E5E5 3CAED8 D3DFFA BBCFED 34488E',
+        D: 'AEB4F2 858EDD 2F54AF 182A84 B843C5 AC7BDE 8854B3 E2D3FF D5B9F8 361851 B9BAE1 DE9AD4 B90095 8B279B 2F1F90 E3E1EE C4D4F6 A45EC7 D8C3D7 9C32B2 9A009B 333A95 EBDAFC 7786E5 494FC7 DFC2F8',
+        E: 'FDD3CC FEC0DF FFB7E7 E8649E F551A2 F13D74 C63478 FFDBE9 E970CC D33793 FCDDD2 F78FC3 B5006D FFD1BA F8C7C9 FFF3EB FFE2EA FFC7DB FEBAD5 D8C7D1 BD9DA1 B785A1 937A8D E1BCE8',
+        F: 'FD957B FC3D46 F74941 FC283C E7002F 943630 971937 BC0028 E2677A 8A4526 5A2121 FD4E6A F35744 FFA9AD D30022 FEC2A6 E69C79 D37C46 C1444A CD9391 F7B4C6 FDC0D0 F67E66 E698AA E54B4F',
+        G: 'FFE2CE FFC4AA F4C3A5 E1B383 EDB045 E99C17 9D5B3E 753832 E6B483 D98C39 E0C593 FFC890 B7714A 8D614C FCF9E0 F2D9BA 78524B FFE4CC E07935 A94023 B88558',
+        H: 'FDFBFF FEFFFF B6B1BA 89858C 48464E 2F2B2F 000000 E7D6DB EDEDED EEE9EA CECDD5 FFF5ED F5ECD2 CFD7D3 98A6A8 1D1414 F1EDED FFFDF0 F6EFE2 949FA3 FFFBE1 CACAD4 9A9D94',
+        M: 'BCC6B8 8AA386 697D80 E3D2BC D0CCAA B0A782 B4A497 B38281 A58767 C5B2BC 9F7594 644749 D19066 C77362 757D78'
+      };
+      const COLORS = Object.entries(SERIES).flatMap(([series, values]) => values.split(' ').map((hex, index) => ({
+        code: `${series}${index + 1}`,
+        series,
+        hex: `#${hex}`,
+        transparent: series === 'H' && index === 0
+      })));
+      const MIXED_COLOR = { code: '混豆', series: 'mixed', hex: '#D8E5CF', mixed: true };
+      const INVENTORY_ITEMS = [MIXED_COLOR, ...COLORS];
+      const CODES = new Set(INVENTORY_ITEMS.map(color => color.code));
+      const STORAGE_KEY = 'dou-xia-inventory-v1';
+      const MAX_QUANTITY = 999999999;
+      const DEFAULT_THRESHOLD = 100;
+      const $ = id => document.getElementById(id);
+      const numberFormat = new Intl.NumberFormat('zh-CN');
+      let storageAvailable = true;
+      let toastTimer;
+      let editingCode = null;
+      let activeView = 'inventory';
+      const filters = { query: '', status: 'all', series: 'all', restockQuery: '', restockSeries: 'all' };
+      const expandedCards = new Set();
+      const undoStack = [];
+      const cloudConfig = window.CLOUD_CONFIG || {};
+      const cloudConfigured = typeof cloudConfig.supabaseUrl === 'string' && cloudConfig.supabaseUrl.startsWith('https://') && !cloudConfig.supabaseUrl.includes('YOUR_') && typeof cloudConfig.supabaseKey === 'string' && cloudConfig.supabaseKey.length > 20 && !cloudConfig.supabaseKey.includes('YOUR_');
+      const previewMode = !cloudConfigured;
+      const ROOM_KEY = 'dou-xia-cloud-room-id';
+      const PREFS_KEY = 'dou-xia-cloud-preferences';
+      let supabaseClient = null;
+      let roomId = null;
+      let currentUserId = null;
+      let roomChannel = null;
+      let roomReady = false;
+      let syncing = false;
+      let syncState = previewMode ? 'preview' : 'idle';
+      let syncMessage = '';
+      let versions = {};
+      let syncedQuantities = {};
+      let syncedThresholds = {};
+      let ocrWorker = null;
+      let ocrRows = [];
+
+      function defaultState() {
+        return {
+          app: 'bead-inventory',
+          version: 1,
+          quantities: Object.fromEntries(INVENTORY_ITEMS.map(color => [color.code, 0])),
+          thresholds: Object.fromEntries(INVENTORY_ITEMS.map(color => [color.code, DEFAULT_THRESHOLD])),
+          step: 50,
+          sort: 'code',
+          updatedAt: null
+        };
+      }
+
+      function validateCount(value, label) {
+        if (!Number.isSafeInteger(value) || value < 0 || value > MAX_QUANTITY) throw new Error(`${label}必须是 0 到 ${MAX_QUANTITY} 之间的整数。`);
+        return value;
+      }
+
+      function validateBackup(data) {
+        if (!data || data.app !== 'bead-inventory' || data.version !== 1 || !data.quantities || typeof data.quantities !== 'object' || Array.isArray(data.quantities)) throw new Error('这不是豆匣支持的库存备份。');
+        const quantities = {};
+        const thresholds = {};
+        for (const color of COLORS) {
+          if (!Object.hasOwn(data.quantities, color.code)) throw new Error(`备份不完整：缺少 ${color.code}。`);
+          quantities[color.code] = validateCount(data.quantities[color.code], `${color.code} 余量`);
+          thresholds[color.code] = data.thresholds && Object.hasOwn(data.thresholds, color.code) ? validateCount(data.thresholds[color.code], `${color.code} 补货线`) : DEFAULT_THRESHOLD;
+        }
+        quantities[MIXED_COLOR.code] = Object.hasOwn(data.quantities, MIXED_COLOR.code) ? validateCount(data.quantities[MIXED_COLOR.code], '混豆余量') : 0;
+        thresholds[MIXED_COLOR.code] = data.thresholds && Object.hasOwn(data.thresholds, MIXED_COLOR.code) ? validateCount(data.thresholds[MIXED_COLOR.code], '混豆补货线') : DEFAULT_THRESHOLD;
+        const savedStep = data.step === undefined ? 50 : Number(data.step);
+        if (![1, 10, 50, 100, 1000].includes(savedStep)) throw new Error('备份中的增减数量无效。');
+        const step = [1, 10].includes(savedStep) ? 50 : savedStep;
+        const sort = data.sort === undefined ? 'code' : data.sort;
+        if (!['code', 'asc', 'desc'].includes(sort)) throw new Error('备份中的排序方式无效。');
+        return { app: 'bead-inventory', version: 1, quantities, thresholds, step, sort, updatedAt: typeof data.updatedAt === 'string' ? data.updatedAt : null };
+      }
+
+      function loadState() {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          return saved ? validateBackup(JSON.parse(saved)) : defaultState();
+        } catch (error) {
+          storageAvailable = false;
+          return defaultState();
+        }
+      }
+
+      let state = previewMode ? loadState() : defaultState();
+
+      function savePreferences() {
+        try {
+          localStorage.setItem(PREFS_KEY, JSON.stringify({ step: state.step, sort: state.sort }));
+        } catch (error) {}
+      }
+
+      function loadPreferences() {
+        if (previewMode) return;
+        try {
+          const preferences = JSON.parse(localStorage.getItem(PREFS_KEY) || '{}');
+          if ([50, 100, 1000].includes(preferences.step)) state.step = preferences.step;
+          if (['code', 'asc', 'desc'].includes(preferences.sort)) state.sort = preferences.sort;
+        } catch (error) {}
+      }
+
+      function saveState() {
+        state.updatedAt = new Date().toISOString();
+        if (previewMode) {
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            storageAvailable = true;
+          } catch (error) {
+            storageAvailable = false;
+          }
+        } else {
+          savePreferences();
+          queueCloudSync();
+        }
+        renderSaveState();
+      }
+
+      function setSyncState(next, message = '') {
+        syncState = next;
+        syncMessage = message;
+        renderSaveState();
+      }
+
+      function canWrite() {
+        if (previewMode) return storageAvailable;
+        if (!roomId || !roomReady) {
+          showToast('请先创建或加入共享房间');
+          return false;
+        }
+        if (!navigator.onLine || syncState === 'offline') {
+          showToast('当前离线，恢复网络后再修改');
+          return false;
+        }
+        if (syncState === 'error') {
+          showToast('同步尚未恢复，请重新连接房间');
+          return false;
+        }
+        return true;
+      }
+
+      function getClient() {
+        if (!cloudConfigured) throw new Error('CLOUD_NOT_CONFIGURED');
+        if (!window.supabase || !window.supabase.createClient) throw new Error('CLOUD_LIBRARY_UNAVAILABLE');
+        if (!supabaseClient) {
+          supabaseClient = window.supabase.createClient(cloudConfig.supabaseUrl, cloudConfig.supabaseKey, {
+            auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
+          });
+        }
+        return supabaseClient;
+      }
+
+      async function ensureSession() {
+        const client = getClient();
+        let { data: { session }, error } = await client.auth.getSession();
+        if (error) throw error;
+        if (!session) {
+          const result = await client.auth.signInAnonymously();
+          if (result.error) throw result.error;
+          session = result.data.session;
+        }
+        if (!session) throw new Error('AUTH_REQUIRED');
+        currentUserId = session.user.id;
+        return client;
+      }
+
+      function friendlyError(error) {
+        const message = String(error && error.message || error || '');
+        const known = [
+          ['ROOM_OR_PASSWORD_INVALID', '房间号或密码不正确'],
+          ['ROOM_FULL', '这个房间已经有两个人了'],
+          ['PASSWORD_LENGTH_INVALID', '房间密码长度需为 6 到 72 字节'],
+          ['INVENTORY_CONFLICT', '对方已先修改同一颜色，请核对最新库存'],
+          ['ROOM_ACCESS_DENIED', '没有访问这个房间的权限'],
+          ['AUTH_REQUIRED', '匿名登录已失效，请重新连接'],
+          ['CLOUD_LIBRARY_UNAVAILABLE', '云端组件加载失败，请检查网络'],
+          ['CLOUD_NOT_CONFIGURED', '请先完成 Supabase 配置']
+        ];
+        const matched = known.find(([code]) => message.includes(code));
+        return matched ? matched[1] : '云端操作失败，请检查网络或配置';
+      }
+
+      function collectChanges() {
+        return INVENTORY_ITEMS.filter(color => state.quantities[color.code] !== syncedQuantities[color.code] || state.thresholds[color.code] !== syncedThresholds[color.code]).map(color => ({
+          code: color.code,
+          quantity: state.quantities[color.code],
+          min_stock: state.thresholds[color.code],
+          base_version: versions[color.code] || 1
+        }));
+      }
+
+      async function queueCloudSync() {
+        if (previewMode || syncing || !roomReady) return;
+        if (!navigator.onLine) {
+          setSyncState('offline', '当前离线，修改尚未同步');
+          return;
+        }
+        syncing = true;
+        setSyncState('saving');
+        try {
+          while (collectChanges().length) {
+            const updates = collectChanges();
+            const { data, error } = await supabaseClient.rpc('apply_inventory_updates', { p_room_id: roomId, p_updates: updates });
+            if (error) throw error;
+            for (const row of data || []) {
+              versions[row.color_code] = Number(row.version);
+              syncedQuantities[row.color_code] = Number(row.quantity);
+              syncedThresholds[row.color_code] = Number(row.min_stock);
+            }
+          }
+          setSyncState('online');
+        } catch (error) {
+          const message = friendlyError(error);
+          setSyncState(navigator.onLine ? 'error' : 'offline', message);
+          showToast(`同步失败：${message}`);
+          if (String(error && error.message).includes('INVENTORY_CONFLICT')) {
+            undoStack.length = 0;
+            updateUndoButton();
+            await loadRoomData();
+          }
+        } finally {
+          syncing = false;
+          if (roomReady && collectChanges().length && navigator.onLine && syncState !== 'error') queueCloudSync();
+        }
+      }
+
+      function renderSaveState() {
+        let footerText;
+        let pillText;
+        let warning = '';
+        let pillClass = '';
+        if (previewMode) {
+          footerText = storageAvailable ? '仅本机预览，尚未共享' : '当前记录尚未保存，请备份';
+          pillText = '本机预览';
+          if (!storageAvailable) warning = '当前浏览器不能保存数据，请导出备份。';
+        } else if (!roomId) {
+          footerText = '尚未加入共享房间';
+          pillText = '未连接';
+          warning = '当前只能预览，创建或加入房间后才能修改和同步库存。';
+          pillClass = 'error';
+        } else {
+          const labels = {
+            connecting: ['正在连接共享房间', '连接中'],
+            online: ['已同步到共享房间', '已同步'],
+            saving: ['正在同步到共享房间', '同步中'],
+            offline: ['连接中断，修改尚未同步', '已离线'],
+            error: ['同步异常，请检查连接', '同步异常']
+          };
+          [footerText, pillText] = labels[syncState] || labels.connecting;
+          if (syncState === 'offline' || syncState === 'error') {
+            warning = syncMessage || '连接中断，请检查网络后重新连接。';
+            pillClass = 'error';
+          } else if (syncState === 'saving') pillClass = 'saving';
+        }
+        $('storage-warning').textContent = warning;
+        $('storage-warning').hidden = !warning;
+        $('sync-pill').textContent = pillText;
+        $('sync-pill').className = `sync-pill ${pillClass}`;
+        $('room-button-label').textContent = roomId ? '邀请 / 房间' : '双人实时共享';
+        $('settings-sync-description').textContent = roomReady ? '共享房间已连接，两个人的修改会实时同步。' : roomId ? '正在连接共享房间，连接完成后才能修改库存。' : previewMode ? '当前为本机预览，配置 Supabase 后才能远程共享。' : '创建或加入共享房间后，两个人可以共同编辑同一份库存。';
+        const saveState = $('save-state');
+        saveState.replaceChildren();
+        const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        icon.setAttribute('class', 'icon');
+        icon.innerHTML = '<use href="#i-check"/>';
+        saveState.append(icon, document.createTextNode(footerText));
+      }
+
+      async function loadRoomData() {
+        const { data, error } = await supabaseClient.from('room_items').select('color_code,quantity,min_stock,version,updated_by').eq('room_id', roomId);
+        if (error) throw error;
+        if (!data || data.length !== INVENTORY_ITEMS.length) throw new Error('ROOM_DATA_INCOMPLETE');
+        const next = defaultState();
+        const nextVersions = {};
+        for (const row of data) {
+          if (!CODES.has(row.color_code)) throw new Error('ROOM_DATA_INCOMPLETE');
+          next.quantities[row.color_code] = validateCount(Number(row.quantity), `${row.color_code} 余量`);
+          next.thresholds[row.color_code] = validateCount(Number(row.min_stock), `${row.color_code} 补货线`);
+          nextVersions[row.color_code] = Number(row.version);
+        }
+        state.quantities = next.quantities;
+        state.thresholds = next.thresholds;
+        versions = nextVersions;
+        syncedQuantities = { ...next.quantities };
+        syncedThresholds = { ...next.thresholds };
+        renderAll();
+      }
+
+      function handleRemoteRow(row) {
+        if (!roomReady || !row || row.room_id !== roomId || !CODES.has(row.color_code)) return;
+        const code = row.color_code;
+        versions[code] = Number(row.version);
+        syncedQuantities[code] = Number(row.quantity);
+        syncedThresholds[code] = Number(row.min_stock);
+        if (row.updated_by === currentUserId) return;
+        state.quantities[code] = Number(row.quantity);
+        state.thresholds[code] = Number(row.min_stock);
+        if (editingCode === code && $('detail-dialog').open) {
+          $('detail-dialog').close();
+          showToast(`${code} 刚被对方更新，请重新打开后再修改`);
+        }
+        renderAll();
+        if ($('ocr-dialog').open) renderOcrPreview();
+        showToast(`对方更新了 ${code}`);
+      }
+
+      async function connectRoom(targetRoomId) {
+        if (previewMode) {
+          showToast('请先完成 Supabase 配置');
+          return;
+        }
+        const pending = roomId === targetRoomId && Object.keys(syncedQuantities).length ? collectChanges() : [];
+        roomId = targetRoomId;
+        roomReady = false;
+        setSyncState('connecting');
+        if (roomChannel) {
+          await supabaseClient.removeChannel(roomChannel);
+          roomChannel = null;
+        }
+        try {
+          await ensureSession();
+          await loadRoomData();
+          const conflict = pending.some(change => versions[change.code] !== change.base_version);
+          if (!conflict) {
+            for (const change of pending) {
+              state.quantities[change.code] = change.quantity;
+              state.thresholds[change.code] = change.min_stock;
+            }
+          } else {
+            undoStack.length = 0;
+            updateUndoButton();
+          }
+          renderAll();
+          roomChannel = supabaseClient.channel(`bead-room-${roomId}`).on('postgres_changes', {
+            event: 'UPDATE', schema: 'public', table: 'room_items', filter: `room_id=eq.${roomId}`
+          }, payload => handleRemoteRow(payload.new)).subscribe(status => {
+            if (status === 'SUBSCRIBED') {
+              roomReady = true;
+              try { localStorage.setItem(ROOM_KEY, roomId); } catch (error) {}
+              if (conflict) setSyncState('error', '对方已修改相同颜色，未同步的修改已停止，请核对后重试。');
+              else setSyncState('online');
+              renderAll();
+              updateRoomDialog();
+              if (!conflict) queueCloudSync();
+            } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+              roomReady = false;
+              setSyncState('error', '实时连接中断，请检查网络后重新进入房间。');
+              updateRoomDialog();
+            } else if (status === 'CLOSED' && roomId && navigator.onLine) {
+              roomReady = false;
+              setSyncState('offline', '实时连接已断开，正在等待重新连接。');
+              updateRoomDialog();
+            }
+          });
+          updateRoomDialog();
+        } catch (error) {
+          roomReady = false;
+          setSyncState('error', friendlyError(error));
+          showToast(`连接房间失败：${friendlyError(error)}`);
+          openRoomDialog();
+        }
+      }
+
+      function updateRoomDialog() {
+        const joined = Boolean(roomId && roomReady);
+        $('room-start').hidden = joined;
+        $('room-active').hidden = !joined;
+        $('active-room-id').value = joined ? roomId : '';
+        const queryRoom = new URLSearchParams(location.search).get('room') || '';
+        $('join-room-id').value = roomId || queryRoom;
+        $('room-config-note').textContent = previewMode ? '当前为本机预览，尚未配置 Supabase。按部署说明完成配置后，才能创建或加入远程共享房间。' : '一个人创建房间，另一个人打开邀请链接并输入相同密码即可加入。无需分别注册账号。';
+        for (const form of [$('create-room-form'), $('join-room-form')]) {
+          for (const element of form.elements) element.disabled = previewMode;
+        }
+      }
+
+      function openRoomDialog() {
+        if ($('settings-dialog').open) $('settings-dialog').close();
+        updateRoomDialog();
+        if (!$('room-dialog').open) $('room-dialog').showModal();
+      }
+
+      function inviteLink() {
+        const url = new URL(location.href);
+        url.search = '';
+        url.hash = '';
+        url.searchParams.set('room', roomId);
+        return url.toString();
+      }
+
+      async function copyInvite() {
+        const link = inviteLink();
+        try {
+          await navigator.clipboard.writeText(link);
+          showToast('邀请链接已复制，房间密码请单独发送');
+        } catch (error) {
+          window.prompt('请复制邀请链接，房间密码请单独发送', link);
+        }
+      }
+
+      async function leaveCurrentRoom() {
+        if (!roomId || !window.confirm('退出后需要房间密码才能重新加入。库存不会因退出而清空，确定退出吗？')) return;
+        try {
+          if (!navigator.onLine) throw new Error('OFFLINE');
+          const { error } = await supabaseClient.rpc('leave_room', { p_room_id: roomId });
+          if (error) throw error;
+          if (roomChannel) await supabaseClient.removeChannel(roomChannel);
+          roomChannel = null;
+          roomId = null;
+          roomReady = false;
+          versions = {};
+          syncedQuantities = {};
+          syncedThresholds = {};
+          state = defaultState();
+          loadPreferences();
+          undoStack.length = 0;
+          updateUndoButton();
+          try { localStorage.removeItem(ROOM_KEY); } catch (error) {}
+          setSyncState('idle');
+          renderAll();
+          openRoomDialog();
+        } catch (error) {
+          showToast('暂时无法退出，请联网后重试');
+        }
+      }
+
+      $('room-button').addEventListener('click', openRoomDialog);
+      $('settings-room-button').addEventListener('click', openRoomDialog);
+      $('copy-invite').addEventListener('click', copyInvite);
+      $('leave-room').addEventListener('click', leaveCurrentRoom);
+      $('create-room-form').addEventListener('submit', async event => {
+        event.preventDefault();
+        if (previewMode) return;
+        const password = $('create-password').value;
+        if (password.length < 6) {
+          showToast('请设置至少 6 位的房间密码');
+          return;
+        }
+        const button = event.submitter;
+        button.disabled = true;
+        try {
+          await ensureSession();
+          const { data, error } = await supabaseClient.rpc('create_room', { p_password: password });
+          if (error) throw error;
+          $('create-password').value = '';
+          await connectRoom(data);
+          showToast('房间已创建，可通过“邀请 / 房间”复制链接');
+        } catch (error) {
+          showToast(`创建失败：${friendlyError(error)}`);
+        } finally {
+          button.disabled = false;
+        }
+      });
+      $('join-room-form').addEventListener('submit', async event => {
+        event.preventDefault();
+        if (previewMode) return;
+        const targetRoomId = $('join-room-id').value.trim();
+        const password = $('join-password').value;
+        if (!targetRoomId || password.length < 6) {
+          showToast('请输入房间号和至少 6 位的房间密码');
+          return;
+        }
+        const button = event.submitter;
+        button.disabled = true;
+        try {
+          await ensureSession();
+          const { error } = await supabaseClient.rpc('join_room', { p_room_id: targetRoomId, p_password: password });
+          if (error) throw error;
+          $('join-password').value = '';
+          await connectRoom(targetRoomId);
+        } catch (error) {
+          showToast(`加入失败：${friendlyError(error)}`);
+        } finally {
+          button.disabled = false;
+        }
+      });
+      window.addEventListener('offline', () => {
+        if (roomId) {
+          roomReady = false;
+          setSyncState('offline', '当前离线，修改尚未同步；恢复网络后会重新连接。');
+        }
+      });
+      window.addEventListener('online', () => {
+        if (roomId && !previewMode) connectRoom(roomId);
+      });
+
+      function icon(name) {
+        return `<svg class="icon" aria-hidden="true"><use href="#i-${name}"/></svg>`;
+      }
+
+      function stockStatus(color) {
+        const quantity = state.quantities[color.code];
+        if (quantity === 0) return { key: 'out', label: '缺货' };
+        if (quantity <= state.thresholds[color.code]) return { key: 'low', label: '待补' };
+        return { key: 'stock', label: '充足' };
+      }
+
+      function sortColors(colors) {
+        return [...colors].sort((a, b) => {
+          if (state.sort === 'code') {
+            if (a.mixed !== b.mixed) return a.mixed ? -1 : 1;
+            return a.code.localeCompare(b.code, 'zh-CN', { numeric: true });
+          }
+          const difference = state.quantities[a.code] - state.quantities[b.code];
+          return (state.sort === 'asc' ? difference : -difference) || a.code.localeCompare(b.code, 'zh-CN', { numeric: true });
+        });
+      }
+
+      function beadMarkup(color) {
+        return `<span class="bead${color.transparent ? ' transparent' : color.mixed ? ' mixed' : ''}" style="--bead:${color.hex}" aria-hidden="true"></span>`;
+      }
+
+      function renderMetrics() {
+        const values = Object.values(state.quantities);
+        $('total-count').textContent = numberFormat.format(values.reduce((sum, quantity) => sum + quantity, 0));
+        $('stock-count').textContent = values.filter(quantity => quantity > 0).length;
+        $('low-count').textContent = INVENTORY_ITEMS.filter(color => state.quantities[color.code] <= state.thresholds[color.code]).length;
+      }
+
+      function renderSeriesFilters() {
+        for (const [containerId, key] of [['series-filters', 'series'], ['restock-series', 'restockSeries']]) {
+          $(containerId).innerHTML = ['all', ...Object.keys(SERIES), 'mixed'].map(series => `<button class="series-chip${filters[key] === series ? ' active' : ''}" type="button" data-series-target="${key}" data-series="${series}" aria-pressed="${filters[key] === series}">${series === 'all' ? '全部系列' : series === 'mixed' ? '混豆' : `${series} 系列`}</button>`).join('');
+        }
+      }
+
+      function filteredInventory() {
+        const query = filters.query.trim().toUpperCase().replace(/\s+/g, '');
+        return sortColors(INVENTORY_ITEMS.filter(color => {
+          if (filters.series !== 'all' && color.series !== filters.series) return false;
+          const quantity = state.quantities[color.code];
+          if (filters.status === 'stock' && quantity <= 0) return false;
+          if (filters.status === 'low' && quantity > state.thresholds[color.code]) return false;
+          if (filters.status === 'out' && quantity !== 0) return false;
+          return !query || color.code.includes(query) || color.code.replace(/(\D)0+/, '$1').includes(query);
+        }));
+      }
+
+      function cardMarkup(color) {
+        const quantity = state.quantities[color.code];
+        const status = stockStatus(color);
+        const expanded = expandedCards.has(color.code);
+        return `<article class="color-card${expanded ? ' expanded' : ''}">
+          <button class="color-main" type="button" data-action="toggle" data-code="${color.code}" aria-expanded="${expanded}" aria-controls="card-controls-${color.code}" aria-label="${expanded ? '收起' : '展开'} ${color.code}，当前余量 ${quantity} 颗">
+            ${beadMarkup(color)}
+            <span class="color-summary"><span class="color-code">${color.code}${color.transparent ? '<span class="transparent-note">透明豆</span>' : ''}</span><span class="quantity"><strong class="quantity-number">${numberFormat.format(quantity)}</strong><span class="quantity-unit">颗</span></span></span>
+            <span class="stock-tag ${status.key === 'stock' ? '' : status.key}">${status.label}</span>
+            <svg class="icon fold-icon" aria-hidden="true"><use href="#i-chevron"/></svg>
+          </button>
+          <div class="card-actions" id="card-controls-${color.code}" ${expanded ? '' : 'hidden'}>
+            <button class="count-button minus" type="button" data-action="decrease" data-code="${color.code}" aria-label="${color.code} 减少 ${state.step} 颗" ${quantity === 0 ? 'disabled' : ''}>${icon('minus')}</button>
+            <button class="edit-button" type="button" data-action="edit" data-code="${color.code}" aria-label="直接修改 ${color.code} 的余量">改数</button>
+            <button class="count-button plus" type="button" data-action="increase" data-code="${color.code}" aria-label="${color.code} 增加 ${state.step} 颗">${icon('plus')}</button>
+          </div>
+        </article>`;
+      }
+
+      function renderInventory(preserveFocus = false) {
+        const focused = preserveFocus && document.activeElement ? { action: document.activeElement.dataset.action, code: document.activeElement.dataset.code } : null;
+        const colors = filteredInventory();
+        $('color-grid').innerHTML = colors.map(cardMarkup).join('');
+        $('color-grid').hidden = colors.length === 0;
+        $('inventory-empty').hidden = colors.length !== 0;
+        $('result-count').textContent = `显示 ${colors.length} / ${INVENTORY_ITEMS.length} 项`;
+        if (!colors.length) $('empty-message').textContent = filters.query ? `没有匹配“${filters.query}”的色号，请检查输入。` : '当前筛选条件下没有颜色，换个条件试试看。';
+        if (focused && focused.code) {
+          const target = [...$('color-grid').querySelectorAll(`[data-code="${focused.code}"]`)].find(element => element.dataset.action === focused.action && !element.disabled);
+          if (target) target.focus({ preventScroll: true });
+        }
+      }
+
+      function renderRestock() {
+        const query = filters.restockQuery.trim().toUpperCase().replace(/\s+/g, '');
+        const colors = sortColors(INVENTORY_ITEMS.filter(color => state.quantities[color.code] <= state.thresholds[color.code] && (filters.restockSeries === 'all' || color.series === filters.restockSeries) && (!query || color.code.includes(query))));
+        $('restock-list').innerHTML = colors.map(color => {
+          const quantity = state.quantities[color.code];
+          return `<article class="restock-card">${beadMarkup(color)}<div class="restock-info"><button class="restock-code" type="button" data-action="edit" data-code="${color.code}" aria-label="修改 ${color.code} 库存">${color.code}</button><div class="restock-detail">剩 ${numberFormat.format(quantity)} 颗 · 补货线 ${numberFormat.format(state.thresholds[color.code])} 颗</div></div><button class="restock-add" type="button" data-action="increase" data-code="${color.code}" aria-label="${color.code} 增加 ${state.step} 颗">＋ ${state.step} 颗</button></article>`;
+        }).join('');
+        $('restock-list').hidden = colors.length === 0;
+        $('restock-empty').hidden = colors.length !== 0;
+        const needsRestock = INVENTORY_ITEMS.some(color => state.quantities[color.code] <= state.thresholds[color.code]);
+        $('restock-empty-title').textContent = needsRestock ? '清单里没有匹配项' : '库存都妥妥的';
+        $('restock-empty-message').textContent = needsRestock ? '换个色号或系列试试看。' : '暂时没有需要补的颜色，安心创作吧。';
+        $('restock-count').textContent = `${colors.length} 色`;
+      }
+
+      function renderAll(preserveFocus = false) {
+        renderMetrics();
+        renderInventory(preserveFocus);
+        renderRestock();
+        renderSaveState();
+      }
+
+      function showToast(message) {
+        clearTimeout(toastTimer);
+        (document.querySelector('dialog[open]') || document.body).appendChild($('toast'));
+        $('toast').textContent = message;
+        $('toast').hidden = false;
+        toastTimer = setTimeout(() => { $('toast').hidden = true; }, 2400);
+      }
+
+      function updateUndoButton() {
+        $('undo-button').disabled = undoStack.length === 0;
+        $('undo-button').title = undoStack.length ? `撤销上一步（还可撤销 ${undoStack.length} 步）` : '暂无可撤销的库存修改';
+      }
+
+      function recordHistory() {
+        undoStack.push({ quantities: { ...state.quantities }, thresholds: { ...state.thresholds } });
+        if (undoStack.length > 20) undoStack.shift();
+        updateUndoButton();
+      }
+
+      function undoLast() {
+        if (!canWrite()) return;
+        const previous = undoStack.pop();
+        if (!previous) return;
+        state.quantities = previous.quantities;
+        state.thresholds = previous.thresholds;
+        saveState();
+        renderAll();
+        updateUndoButton();
+        showToast(`已撤销上一步库存修改${undoStack.length ? `，还可撤销 ${undoStack.length} 步` : ''}`);
+      }
+
+      $('undo-button').addEventListener('click', undoLast);
+
+      function changeQuantity(code, direction) {
+        if (!CODES.has(code) || !canWrite()) return;
+        const previous = state.quantities[code];
+        const next = Math.max(0, Math.min(MAX_QUANTITY, previous + direction * state.step));
+        if (next === previous) {
+          showToast(previous === 0 ? `${code} 已经是 0 颗啦` : `${code} 已达数量上限`);
+          return;
+        }
+        recordHistory();
+        state.quantities[code] = next;
+        saveState();
+        renderAll(true);
+        if (activeView === 'inventory') {
+          const card = [...$('color-grid').querySelectorAll('.color-card')].find(element => element.querySelector(`[data-code="${code}"]`));
+          if (card) card.scrollIntoView({ block: 'nearest', behavior: 'auto' });
+        }
+      }
+
+      function openDetail(code) {
+        if (!CODES.has(code)) return;
+        editingCode = code;
+        const color = INVENTORY_ITEMS.find(item => item.code === code);
+        $('detail-code').textContent = code + (color.transparent ? ' · 透明豆' : '');
+        $('detail-status').textContent = `${stockStatus(color).label} · ${color.mixed ? '混合装，独立记数' : '屏幕色值仅供参考'}`;
+        $('detail-bead').className = `bead${color.transparent ? ' transparent' : color.mixed ? ' mixed' : ''}`;
+        $('detail-bead').style.setProperty('--bead', color.hex);
+        $('quantity-input').value = state.quantities[code];
+        $('detail-step-input').value = 1;
+        $('threshold-input').value = state.thresholds[code];
+        $('detail-dialog').showModal();
+        setTimeout(() => $('quantity-input').focus(), 50);
+      }
+
+      function readCountInput(input, label) {
+        if (!/^\d+$/.test(input.value.trim())) throw new Error(`${label}请输入 0 或正整数。`);
+        return validateCount(Number(input.value), label);
+      }
+
+      function adjustDetail(direction) {
+        try {
+          const current = readCountInput($('quantity-input'), '余量');
+          const amount = readCountInput($('detail-step-input'), '本次增减');
+          if (amount === 0) throw new Error('本次增减必须大于 0。');
+          const next = Math.max(0, Math.min(MAX_QUANTITY, current + direction * amount));
+          $('quantity-input').value = next;
+          if (next === current) showToast(current === 0 ? '余量已经是 0 颗啦' : '余量已达数量上限');
+        } catch (error) {
+          showToast(error.message);
+        }
+      }
+
+      $('detail-decrease').addEventListener('click', () => adjustDetail(-1));
+      $('detail-increase').addEventListener('click', () => adjustDetail(1));
+
+      function switchView(view) {
+        activeView = view;
+        $('inventory-view').hidden = view !== 'inventory';
+        $('restock-view').hidden = view !== 'restock';
+        document.querySelectorAll('[data-view]').forEach(button => {
+          const active = button.dataset.view === view;
+          button.classList.toggle('active', active);
+          if (active) button.setAttribute('aria-current', 'page');
+          else button.removeAttribute('aria-current');
+        });
+        window.scrollTo({ top: 0, behavior: 'auto' });
+      }
+
+      function dateStamp() {
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      }
+
+      function downloadFile(contents, type, filename) {
+        const blob = new Blob([contents], { type });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.append(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 3000);
+        showToast('文件已生成，请在下载或分享列表中查看');
+      }
+
+      function exportBackup() {
+        downloadFile(JSON.stringify(state, null, 2), 'application/json;charset=utf-8', `拼豆库存备份_${dateStamp()}.json`);
+      }
+
+      function exportCsv() {
+        const rows = [['色号', '剩余数量（颗）', '补货线（颗）', '库存状态'], ...INVENTORY_ITEMS.map(color => [color.code, state.quantities[color.code], state.thresholds[color.code], stockStatus(color).label])];
+        const csv = '﻿' + rows.map(row => row.map(value => `"${String(value).replaceAll('"', '""')}"`).join(',')).join('\r\n');
+        downloadFile(csv, 'text/csv;charset=utf-8', `拼豆库存_${dateStamp()}.csv`);
+      }
+
+      async function importBackup(file) {
+        if (!file || !canWrite()) return;
+        try {
+          if (file.size > 1024 * 1024) throw new Error('备份文件过大，请选择豆匣导出的 JSON 备份。');
+          const imported = validateBackup(JSON.parse(await file.text()));
+          if (!window.confirm('恢复备份会覆盖当前手机里的全部库存记录。确定继续吗？')) return;
+          recordHistory();
+          state = imported;
+          $('step-select').value = state.step;
+          $('sort-select').value = state.sort;
+          saveState();
+          renderAll();
+          $('settings-dialog').close();
+          showToast('库存备份已恢复，可点击左上角撤销');
+        } catch (error) {
+          window.alert(`无法恢复备份：${error.message}`);
+        } finally {
+          $('import-file').value = '';
+        }
+      }
+
+      $('color-grid').addEventListener('click', event => {
+        const button = event.target.closest('button[data-action]');
+        if (!button) return;
+        const code = button.dataset.code;
+        if (button.dataset.action === 'toggle') {
+          const willExpand = !expandedCards.has(code);
+          if (willExpand) expandedCards.add(code);
+          else expandedCards.delete(code);
+          button.closest('.color-card').classList.toggle('expanded', willExpand);
+          button.setAttribute('aria-expanded', String(willExpand));
+          button.setAttribute('aria-label', `${willExpand ? '收起' : '展开'} ${code}，当前余量 ${state.quantities[code]} 颗`);
+          $(`card-controls-${code}`).hidden = !willExpand;
+          return;
+        }
+        if (button.dataset.action === 'edit') openDetail(code);
+        else changeQuantity(code, button.dataset.action === 'increase' ? 1 : -1);
+      });
+      $('restock-list').addEventListener('click', event => {
+        const button = event.target.closest('button[data-action]');
+        if (!button) return;
+        if (button.dataset.action === 'edit') openDetail(button.dataset.code);
+        else changeQuantity(button.dataset.code, 1);
+      });
+      $('search-input').addEventListener('input', event => {
+        filters.query = event.target.value;
+        $('clear-search').hidden = !filters.query;
+        renderInventory();
+      });
+      $('clear-search').addEventListener('click', () => {
+        filters.query = '';
+        $('search-input').value = '';
+        $('clear-search').hidden = true;
+        renderInventory();
+        $('search-input').focus();
+      });
+      $('restock-search').addEventListener('input', event => {
+        filters.restockQuery = event.target.value;
+        renderRestock();
+      });
+      $('step-select').addEventListener('change', event => {
+        state.step = Number(event.target.value);
+        saveState();
+        renderAll();
+        showToast(`现在每次增减 ${state.step} 颗`);
+      });
+      $('sort-select').addEventListener('change', event => {
+        state.sort = event.target.value;
+        saveState();
+        renderAll();
+      });
+      document.querySelector('.status-tabs').addEventListener('click', event => {
+        const button = event.target.closest('[data-status]');
+        if (!button) return;
+        filters.status = button.dataset.status;
+        document.querySelectorAll('[data-status]').forEach(tab => {
+          tab.classList.toggle('active', tab === button);
+          tab.setAttribute('aria-pressed', String(tab === button));
+        });
+        renderInventory();
+      });
+      for (const id of ['series-filters', 'restock-series']) {
+        $(id).addEventListener('click', event => {
+          const button = event.target.closest('[data-series]');
+          if (!button) return;
+          filters[button.dataset.seriesTarget] = button.dataset.series;
+          renderSeriesFilters();
+          if (button.dataset.seriesTarget === 'series') renderInventory();
+          else renderRestock();
+        });
+      }
+      $('reset-filters').addEventListener('click', () => {
+        filters.query = '';
+        filters.status = 'all';
+        filters.series = 'all';
+        $('search-input').value = '';
+        $('clear-search').hidden = true;
+        document.querySelectorAll('[data-status]').forEach(tab => {
+          const active = tab.dataset.status === 'all';
+          tab.classList.toggle('active', active);
+          tab.setAttribute('aria-pressed', String(active));
+        });
+        renderSeriesFilters();
+        renderInventory();
+      });
+      document.querySelectorAll('[data-view]').forEach(button => button.addEventListener('click', () => switchView(button.dataset.view)));
+      document.querySelectorAll('[data-open-settings]').forEach(button => button.addEventListener('click', () => $('settings-dialog').showModal()));
+      document.querySelectorAll('[data-close-dialog]').forEach(button => button.addEventListener('click', () => button.closest('dialog').close()));
+      document.querySelectorAll('dialog').forEach(dialog => dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); }));
+      $('detail-form').addEventListener('submit', event => {
+        event.preventDefault();
+        if (!editingCode || !canWrite()) return;
+        try {
+          const quantity = readCountInput($('quantity-input'), '余量');
+          const threshold = readCountInput($('threshold-input'), '补货线');
+          if (state.quantities[editingCode] !== quantity || state.thresholds[editingCode] !== threshold) recordHistory();
+          state.quantities[editingCode] = quantity;
+          state.thresholds[editingCode] = threshold;
+          saveState();
+          renderAll();
+          $('detail-dialog').close();
+          showToast(`${editingCode} 已保存：${numberFormat.format(quantity)} 颗`);
+        } catch (error) {
+          showToast(error.message);
+        }
+      });
+      document.querySelector('.batch-tabs').addEventListener('click', event => {
+        const button = event.target.closest('[data-batch-mode]');
+        if (!button) return;
+        const isSeries = button.dataset.batchMode === 'series';
+        document.querySelectorAll('[data-batch-mode]').forEach(tab => {
+          tab.classList.toggle('active', tab === button);
+          tab.setAttribute('aria-pressed', String(tab === button));
+        });
+        $('batch-series-field').hidden = !isSeries;
+        $('batch-codes-field').hidden = isSeries;
+      });
+      $('batch-threshold-form').addEventListener('submit', event => {
+        event.preventDefault();
+        if (!canWrite()) return;
+        try {
+          const threshold = readCountInput($('batch-threshold-input'), '最低库存');
+          const isSeries = document.querySelector('[data-batch-mode].active').dataset.batchMode === 'series';
+          let codes;
+          if (isSeries) {
+            const series = $('batch-series').value;
+            codes = INVENTORY_ITEMS.filter(color => color.series === series).map(color => color.code);
+          } else {
+            codes = [...new Set($('batch-codes').value.toUpperCase().split(/[\s,，、;；]+/).filter(Boolean).map(code => code.replace(/^([A-Z])0+(\d+)$/, '$1$2')))];
+            if (!codes.length) throw new Error('请先输入至少一个色号。');
+            const unknown = codes.filter(code => !CODES.has(code));
+            if (unknown.length) throw new Error(`未识别色号：${unknown.join('、')}。`);
+          }
+          if (!window.confirm(`将把 ${codes.length} 个颜色的最低库存统一设为 ${numberFormat.format(threshold)} 颗，原有补货线会被覆盖。确定继续吗？`)) return;
+          if (codes.every(code => state.thresholds[code] === threshold)) {
+            $('settings-dialog').close();
+            showToast('所选颜色已经是这个最低库存');
+            return;
+          }
+          recordHistory();
+          for (const code of codes) state.thresholds[code] = threshold;
+          saveState();
+          renderAll();
+          $('settings-dialog').close();
+          showToast(`已更新 ${codes.length} 个颜色的最低库存`);
+        } catch (error) {
+          showToast(error.message);
+        }
+      });
+      let ocrTaskId = 0;
+
+      function openOcrDialog() {
+        ocrTaskId++;
+        if ($('settings-dialog').open) $('settings-dialog').close();
+        $('ocr-file').value = '';
+        $('ocr-results').hidden = true;
+        $('ocr-upload-view').hidden = false;
+        $('ocr-progress').textContent = '首次识别需要下载中英文语言包，请保持网络连接。';
+        $('ocr-select').disabled = false;
+        if (!$('ocr-dialog').open) $('ocr-dialog').showModal();
+      }
+
+      async function getOcrWorker() {
+        if (!window.Tesseract || !window.Tesseract.createWorker) throw new Error('OCR 组件加载失败，请检查网络。');
+        if (!ocrWorker) {
+          ocrWorker = window.Tesseract.createWorker(['eng', 'chi_sim'], 1, {
+            logger: message => {
+              if (message.status === 'recognizing text') $('ocr-progress').textContent = `正在识别清单… ${Math.round((message.progress || 0) * 100)}%`;
+              else if (message.status) $('ocr-progress').textContent = '正在准备识别组件，请稍候…';
+            }
+          });
+        }
+        return ocrWorker;
+      }
+
+      async function imageToCanvas(file) {
+        const url = URL.createObjectURL(file);
+        try {
+          const image = new Image();
+          await new Promise((resolve, reject) => {
+            image.onload = resolve;
+            image.onerror = () => reject(new Error('无法读取这张图片，请换一张图片重试。'));
+            image.src = url;
+          });
+          const scale = Math.min(2, 2200 / Math.max(image.naturalWidth, image.naturalHeight));
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+          canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+          const context = canvas.getContext('2d', { willReadFrequently: true });
+          context.fillStyle = '#ffffff';
+          context.fillRect(0, 0, canvas.width, canvas.height);
+          context.drawImage(image, 0, 0, canvas.width, canvas.height);
+          const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
+          for (let index = 0; index < pixels.data.length; index += 4) {
+            const gray = pixels.data[index] * .299 + pixels.data[index + 1] * .587 + pixels.data[index + 2] * .114;
+            const adjusted = Math.max(0, Math.min(255, (gray - 128) * 1.35 + 135));
+            pixels.data[index] = adjusted;
+            pixels.data[index + 1] = adjusted;
+            pixels.data[index + 2] = adjusted;
+          }
+          context.putImageData(pixels, 0, 0);
+          return canvas;
+        } finally {
+          URL.revokeObjectURL(url);
+        }
+      }
+
+      function parseOcrText(text) {
+        const rows = [];
+        const unrecognized = [];
+        for (const raw of String(text).split(/\r?\n/)) {
+          const line = raw.trim();
+          if (!line) continue;
+          const upper = line.toUpperCase();
+          let code = '';
+          let rest = '';
+          const mixedMatch = upper.match(/混\s*豆/);
+          if (mixedMatch) {
+            code = '混豆';
+            rest = upper.slice(mixedMatch.index + mixedMatch[0].length);
+          } else {
+            const match = upper.match(/(?:^|[^A-Z])([ABCDEFGHM])\s?[O0]*(\d{1,2})(?!\d)/);
+            if (match) {
+              const candidate = `${match[1]}${Number(match[2])}`;
+              if (CODES.has(candidate)) {
+                code = candidate;
+                rest = upper.slice(match.index + match[0].length);
+              }
+            }
+          }
+          if (!code) {
+            unrecognized.push(raw);
+            continue;
+          }
+          const numberMatch = rest.replaceAll('，', ',').match(/-?\d[\d,]*/);
+          if (!numberMatch) {
+            unrecognized.push(raw);
+            continue;
+          }
+          rows.push({ code, quantity: numberMatch[0].replaceAll(',', '') });
+        }
+        return { rows, unrecognized };
+      }
+
+      function normalizeOcrCode(value) {
+        const text = String(value).trim().toUpperCase();
+        if (text === '混豆') return text;
+        const match = text.match(/^([ABCDEFGHM])0*(\d{1,2})$/);
+        if (!match) return text;
+        const code = `${match[1]}${Number(match[2])}`;
+        return CODES.has(code) ? code : text;
+      }
+
+      function validatedOcrRows() {
+        const normalized = ocrRows.map(row => {
+          const code = normalizeOcrCode(row.code);
+          const quantityText = String(row.quantity).trim();
+          const validCode = CODES.has(code);
+          const validQuantity = /^\d+$/.test(quantityText) && Number.isSafeInteger(Number(quantityText)) && Number(quantityText) <= MAX_QUANTITY;
+          return { code, quantity: validQuantity ? Number(quantityText) : null, valid: validCode && validQuantity };
+        });
+        const counts = normalized.reduce((map, row) => {
+          if (row.valid) map[row.code] = (map[row.code] || 0) + 1;
+          return map;
+        }, {});
+        const duplicates = Object.values(counts).some(count => count > 1);
+        return { rows: normalized, duplicates, valid: normalized.length > 0 && normalized.every(row => row.valid) && !duplicates };
+      }
+
+      function ocrTarget(row, mode = $('ocr-mode').value) {
+        const current = state.quantities[row.code];
+        if (mode === 'add') return Math.min(MAX_QUANTITY, current + row.quantity);
+        if (mode === 'subtract') return Math.max(0, current - row.quantity);
+        return row.quantity;
+      }
+
+      function renderOcrRows() {
+        $('ocr-rows').innerHTML = ocrRows.map((row, index) => `<div class="ocr-row" data-ocr-row="${index}">
+          <label><input data-ocr-field="code" value="${String(row.code).replaceAll('"', '&quot;')}" aria-label="第 ${index + 1}行色号" autocapitalize="characters" spellcheck="false"><span class="ocr-before">色号</span></label>
+          <label><input data-ocr-field="quantity" value="${String(row.quantity).replaceAll('"', '&quot;')}" type="number" inputmode="numeric" min="0" max="${MAX_QUANTITY}" step="1" aria-label="第 ${index + 1}行数量"><span class="ocr-before">识别数量</span></label>
+          <button class="ocr-delete" type="button" data-ocr-delete="${index}" aria-label="删除第 ${index + 1} 行">×</button>
+        </div>`).join('');
+        renderOcrPreview();
+      }
+
+      function renderOcrPreview() {
+        if (!$('ocr-results') || $('ocr-results').hidden) return;
+        const validation = validatedOcrRows();
+        let insufficient = 0;
+        document.querySelectorAll('[data-ocr-row]').forEach((element, index) => {
+          const row = validation.rows[index];
+          const codeInput = element.querySelector('[data-ocr-field="code"]');
+          const quantityInput = element.querySelector('[data-ocr-field="quantity"]');
+          codeInput.classList.toggle('invalid', !CODES.has(row.code));
+          quantityInput.classList.toggle('invalid', row.quantity === null);
+          const before = element.querySelector('.ocr-before');
+          if (row.valid) {
+            const target = ocrTarget(row);
+            before.textContent = `当前 ${state.quantities[row.code]} → ${target} 颗`;
+            if ($('ocr-mode').value === 'subtract' && row.quantity > state.quantities[row.code]) insufficient++;
+          } else before.textContent = '请检查这一行';
+        });
+        const connected = previewMode || (roomReady && navigator.onLine && syncState !== 'error');
+        $('ocr-apply').disabled = !validation.valid || !connected;
+        $('ocr-summary').textContent = validation.duplicates ? '有重复色号，请删除重复行或合并数量后再写入。' : validation.valid ? `将按“${$('ocr-mode').selectedOptions[0].textContent}”更新 ${validation.rows.length} 项。${insufficient ? `有 ${insufficient} 项扣减后会停在 0。` : ''}${connected ? '' : ' 请先连接共享房间。'}` : '请补全合法色号和 0 或正整数数量后再写入。';
+      }
+
+      async function recognizeOcrFile(file) {
+        if (!file) return;
+        if (!file.type.startsWith('image/')) {
+          showToast('请选择图片文件');
+          return;
+        }
+        if (file.size > 20 * 1024 * 1024) {
+          showToast('图片过大，请选择不超过 20MB 的图片');
+          return;
+        }
+        const task = ++ocrTaskId;
+        $('ocr-select').disabled = true;
+        $('ocr-progress').textContent = '正在处理图片…';
+        try {
+          const canvas = await imageToCanvas(file);
+          $('ocr-progress').textContent = '图片处理完成，正在加载识别组件…';
+          const worker = await getOcrWorker();
+          $('ocr-progress').textContent = '识别组件已加载，正在读取文字…';
+          const result = await worker.recognize(canvas);
+          if (task !== ocrTaskId) return;
+          const parsed = parseOcrText(result.data.text);
+          ocrRows = parsed.rows;
+          $('ocr-unrecognized').textContent = parsed.unrecognized.length ? parsed.unrecognized.join('\n') : '没有未识别的行。';
+          $('ocr-upload-view').hidden = true;
+          $('ocr-results').hidden = false;
+          const confidenceWarning = result.data.confidence < 70 ? `本次整体识别置信度为 ${Math.round(result.data.confidence)}%。` : '';
+          const missingWarning = parsed.unrecognized.length ? `有 ${parsed.unrecognized.length} 行未自动识别，请展开下方内容检查并手动补录。` : '';
+          $('ocr-warning').hidden = !confidenceWarning && !missingWarning;
+          $('ocr-warning').textContent = `${confidenceWarning}${missingWarning}请逐项核对色号与数量后再写入。`;
+          renderOcrRows();
+        } catch (error) {
+          if (task !== ocrTaskId) return;
+          ocrWorker = null;
+          $('ocr-select').disabled = false;
+          $('ocr-progress').textContent = error.message || '识别失败，请换一张更清晰的图片重试。';
+        } finally {
+          if (task === ocrTaskId) $('ocr-select').disabled = false;
+        }
+      }
+
+      function applyOcrRows() {
+        if (!canWrite()) return;
+        const validation = validatedOcrRows();
+        if (!validation.valid) {
+          showToast(validation.duplicates ? '请先处理重复色号' : '请先修正色号或数量');
+          return;
+        }
+        recordHistory();
+        for (const row of validation.rows) state.quantities[row.code] = ocrTarget(row);
+        saveState();
+        renderAll();
+        $('ocr-dialog').close();
+        showToast(`已根据清单更新 ${validation.rows.length} 项，可点击左上角撤销`);
+      }
+
+      $('open-ocr').addEventListener('click', openOcrDialog);
+      $('ocr-select').addEventListener('click', () => $('ocr-file').click());
+      $('ocr-file').addEventListener('change', event => recognizeOcrFile(event.target.files[0]));
+      $('ocr-add-row').addEventListener('click', () => {
+        ocrRows.push({ code: '', quantity: '' });
+        renderOcrRows();
+        const inputs = $('ocr-rows').querySelectorAll('[data-ocr-field="code"]');
+        inputs[inputs.length - 1].focus();
+      });
+      $('ocr-rows').addEventListener('input', event => {
+        const input = event.target.closest('[data-ocr-field]');
+        if (!input) return;
+        const index = Number(input.closest('[data-ocr-row]').dataset.ocrRow);
+        ocrRows[index][input.dataset.ocrField] = input.value;
+        renderOcrPreview();
+      });
+      $('ocr-rows').addEventListener('click', event => {
+        const button = event.target.closest('[data-ocr-delete]');
+        if (!button) return;
+        ocrRows.splice(Number(button.dataset.ocrDelete), 1);
+        renderOcrRows();
+      });
+      $('ocr-mode').addEventListener('change', renderOcrPreview);
+      $('ocr-apply').addEventListener('click', applyOcrRows);
+
+      $('export-json').addEventListener('click', exportBackup);
+      $('export-csv').addEventListener('click', exportCsv);
+      $('import-json').addEventListener('click', () => $('import-file').click());
+      $('import-file').addEventListener('change', event => importBackup(event.target.files[0]));
+
+      loadPreferences();
+      $('step-select').value = state.step;
+      $('sort-select').value = state.sort;
+      renderSeriesFilters();
+      updateUndoButton();
+      renderAll();
+      updateRoomDialog();
+      const invitedRoom = new URLSearchParams(location.search).get('room');
+      let savedRoom = null;
+      try { savedRoom = localStorage.getItem(ROOM_KEY); } catch (error) {}
+      if (invitedRoom) openRoomDialog();
+      else if (cloudConfigured && savedRoom) connectRoom(savedRoom);
+      else if (cloudConfigured) openRoomDialog();
+    })();
+  </script>
+</body>
+</html>
