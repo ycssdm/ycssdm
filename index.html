@@ -474,8 +474,8 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+  <script src="vendor/supabase.js"></script>
+  <script src="vendor/tesseract.min.js"></script>
   <script src="cloud-config.js"></script>
   <script>
     (() => {
@@ -1398,6 +1398,10 @@
         if (!window.Tesseract || !window.Tesseract.createWorker) throw new Error('OCR 组件加载失败，请检查网络。');
         if (!ocrWorker) {
           ocrWorker = window.Tesseract.createWorker(['eng', 'chi_sim'], 1, {
+            workerPath: 'vendor/tesseract/worker.min.js',
+            corePath: 'vendor/tesseract/core',
+            langPath: 'vendor/tesseract/lang',
+            gzip: true,
             logger: message => {
               if (message.status === 'recognizing text') $('ocr-progress').textContent = `正在识别清单… ${Math.round((message.progress || 0) * 100)}%`;
               else if (message.status) $('ocr-progress').textContent = '正在准备识别组件，请稍候…';
